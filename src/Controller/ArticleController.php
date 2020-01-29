@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Article;
 use App\Repository\ArticleRepository;
+use App\Repository\CommentRepository;
 use App\Service\MarkdownHelper;
 use App\Service\SlackClient;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,12 +21,11 @@ class ArticleController extends AbstractController
 
     public function __construct(bool $isDebug)
     {
-//        dump($isDebug);die();
         $this->$isDebug = $isDebug;
     }
 
     /**
-     * @Route("/", name="/app_homepage")
+     * @Route("/", name="app_homepage")
      */
     public function homepage(ArticleRepository $repository)
     {
@@ -45,15 +45,8 @@ class ArticleController extends AbstractController
             $slack->sendMessage('Kahn', 'Ah, Kirk, my old friend...');
         }
 
-        $comments = [
-            'I ate a normal rock once. It did NOT taste like bacon!',
-            'Woohoo! I\'m going on an all-asteroid diet!',
-            'I like bacon too! Buy some from my site! bakinsomebacon.com',
-        ];
-
         return $this->render('article/show.html.twig', [
             'article' => $article,
-            'comments' => $comments,
         ]);
     }
 
@@ -62,7 +55,6 @@ class ArticleController extends AbstractController
      */
     public function toggleArticleHeart(Article $article, LoggerInterface $logger, EntityManagerInterface $em)
     {
-        // TODO - actually heart/unheart the article!
 
         $article->incrementHeartCount();
         $em->flush();
